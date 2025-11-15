@@ -148,29 +148,27 @@
         }
 
         // Show photo + label + optional extra elements + emoji
+        // Show photo + label + optional extra elements + emoji
         function showPhoto(photo, label, emojiSymbol = null, extraElements = []) {
             if (activeTimeout) clearTimeout(activeTimeout);
             document.querySelectorAll(".emoji").forEach(e => e.remove());
 
             // Hide all photos and labels
-            [photoYes, photoNo, photoWhy, photoYayAgain].forEach(p => p.style.display = "none");
-            [labelYes, labelNo, labelWhy, labelYayAgain].forEach(l => l.style.display = "none");
+            [photoYes, photoNo, photoWhy, photoYayAgain].forEach(p => { p.style.display = "none"; p.style.opacity = "0"; });
+            [labelYes, labelNo, labelWhy, labelYayAgain].forEach(l => { l.style.display = "none"; l.style.opacity = "0"; });
 
-            // Hide extra elements
-            [reallyLabel, secondButtonContainer].forEach(el => el.style.display = "none");
+            // Hide extra elements properly
+            [reallyLabel, secondButtonContainer].forEach(el => { el.style.display = "none"; el.style.opacity = "0"; });
 
             // Show the new photo and label
             photo.style.display = "block";
             label.style.display = "block";
-            photo.style.opacity = "0";
-            label.style.opacity = "0";
-
             setTimeout(() => {
                 photo.style.opacity = "1";
                 label.style.opacity = "1";
             }, 30);
 
-            // Show extra elements (like Really? label + second buttons)
+            // Show extra elements
             extraElements.forEach(el => {
                 el.style.display = "block";
                 el.style.opacity = "1";
@@ -193,6 +191,7 @@
                 activeTimeout = null;
             }, 5000);
         }
+
 
         // First-level buttons
         yesBtn.addEventListener("click", () => {
