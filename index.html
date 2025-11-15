@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -88,9 +88,9 @@
     <img id="photoNo" class="photo" src="images/ugh.jpeg">
     <div id="labelNo" class="photo-label" style="color: red;">Boo</div>
 
-    <h1>亮亮လွမ်းလား</h1>
+    <h1>亮亮 လွမ်းလား</h1>
 
-    <!-- First-level buttons -->
+    <!-- First-level buttons (always visible) -->
     <div id="buttonContainer">
         <button id="yesBtn">Yes</button>
         <button id="noBtn">No</button>
@@ -152,23 +152,25 @@
             if (activeTimeout) clearTimeout(activeTimeout);
             document.querySelectorAll(".emoji").forEach(e => e.remove());
 
-            // Hide only photos and their labels
+            // Hide all photos and labels
             [photoYes, photoNo, photoWhy, photoYayAgain].forEach(p => p.style.display = "none");
-            [labelYes, labelNo, labelWhy, labelYayAgain].forEach(l => { l.style.display = "none"; l.style.opacity = "1"; });
+            [labelYes, labelNo, labelWhy, labelYayAgain].forEach(l => l.style.display = "none");
 
-            // Show new photo and label
+            // Hide extra elements
+            [reallyLabel, secondButtonContainer].forEach(el => el.style.display = "none");
+
+            // Show the new photo and label
             photo.style.display = "block";
             label.style.display = "block";
             photo.style.opacity = "0";
             label.style.opacity = "0";
 
-            // Fade-in
             setTimeout(() => {
                 photo.style.opacity = "1";
                 label.style.opacity = "1";
             }, 30);
 
-            // Show any extra elements (like Really? label + second buttons)
+            // Show extra elements (like Really? label + second buttons)
             extraElements.forEach(el => {
                 el.style.display = "block";
                 el.style.opacity = "1";
@@ -186,8 +188,6 @@
                     photo.style.display = "none";
                     label.style.display = "none";
                     extraElements.forEach(el => el.style.display = "none");
-                    label.style.opacity = "1";
-                    extraElements.forEach(el => el.style.opacity = "1");
                 }, 200);
 
                 activeTimeout = null;
@@ -196,8 +196,6 @@
 
         // First-level buttons
         yesBtn.addEventListener("click", () => {
-            reallyLabel.style.display = "none";
-            secondButtonContainer.style.display = "none";
             showPhoto(photoYes, labelYes, "❤");
         });
 
@@ -212,4 +210,3 @@
 
 </body>
 </html>
-
