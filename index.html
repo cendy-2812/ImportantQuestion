@@ -59,11 +59,16 @@ button {
     100% { transform: translateY(-120px); opacity: 0; }
 }
 
-#reallyLabel {
-    display: none;
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 15px;
+/* Mobile-safe visibility hiding */
+#reallyLabel, #secondButtonContainer {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+#reallyLabel.show, #secondButtonContainer.show {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0s;
 }
 </style>
 </head>
@@ -133,10 +138,8 @@ function spawnEmojis(symbol) {
 function hideAll() {
     [photoYes, photoNo, photoWhy, photoYayAgain].forEach(p => { p.style.display = "none"; p.style.opacity = 0; });
     [labelYes, labelNo, labelWhy, labelYayAgain].forEach(l => { l.style.display = "none"; l.style.opacity = 0; });
-    reallyLabel.style.display = "none";
-    reallyLabel.style.opacity = 0;
-    secondButtonContainer.style.display = "none";
-    secondButtonContainer.style.opacity = 0;
+    reallyLabel.classList.remove("show");
+    secondButtonContainer.classList.remove("show");
     document.querySelectorAll(".emoji").forEach(e => e.remove());
 }
 
@@ -153,14 +156,11 @@ function showPhoto(photo, label, emojiSymbol = null, extraElements = []) {
     });
 
     // Show extra elements
-    extraElements.forEach(el => {
-        el.style.display = "block";
-        requestAnimationFrame(() => el.style.opacity = 1);
-    });
+    extraElements.forEach(el => el.classList.add("show"));
 
     if (emojiSymbol) spawnEmojis(emojiSymbol);
 
-    // Hide everything after 5s
+    // Hide everything after 5 seconds
     activeTimeout = setTimeout(() => {
         hideAll();
         activeTimeout = null;
