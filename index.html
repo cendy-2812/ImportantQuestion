@@ -33,7 +33,7 @@ body {
     font-weight: bold;
 }
 
-#buttonContainer, #secondButtonContainer {
+#buttonContainer {
     display: flex;
     gap: 20px;
     margin-top: 20px;
@@ -60,20 +60,37 @@ button {
     100% { transform: translateY(-120px); opacity: 0; }
 }
 
-/* absolutely position second-level elements to avoid mobile layout issues */
-#reallyLabel, #secondButtonContainer {
-    position: absolute;
-    top: 50%;
-    transform: translateY(0);
-    left: 50%;
-    transform: translateX(-50%);
+/* Second-level wrapper for mobile-safe positioning */
+#secondLevelWrapper {
     display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    text-align: center;
+}
+
+#reallyLabel {
     opacity: 0;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 200px;
+}
+
+#secondButtonContainer {
+    opacity: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
 }
 </style>
 </head>
 <body>
 
+<!-- First-level photos -->
 <img id="photoYes" class="photo" src="images/yay.jpeg">
 <div id="labelYes" class="photo-label" style="color: green;">Yay</div>
 
@@ -82,17 +99,22 @@ button {
 
 <h1>亮亮 လွမ်းလား</h1>
 
+<!-- First-level buttons (always visible) -->
 <div id="buttonContainer">
     <button id="yesBtn">Yes</button>
     <button id="noBtn">No</button>
 </div>
 
-<div id="reallyLabel">Really?</div>
-<div id="secondButtonContainer">
-    <button id="secondYesBtn">Yes</button>
-    <button id="secondNoBtn">No</button>
+<!-- Second-level wrapper -->
+<div id="secondLevelWrapper">
+    <div id="reallyLabel">Really?</div>
+    <div id="secondButtonContainer">
+        <button id="secondYesBtn">Yes</button>
+        <button id="secondNoBtn">No</button>
+    </div>
 </div>
 
+<!-- Second-level photos -->
 <img id="photoWhy" class="photo" src="images/why.jpeg">
 <div id="labelWhy" class="photo-label" style="color: red;">Boo, you suck</div>
 
@@ -110,6 +132,7 @@ const labelYes = document.getElementById("labelYes");
 const photoNo = document.getElementById("photoNo");
 const labelNo = document.getElementById("labelNo");
 
+const secondLevelWrapper = document.getElementById("secondLevelWrapper");
 const reallyLabel = document.getElementById("reallyLabel");
 const secondButtonContainer = document.getElementById("secondButtonContainer");
 
@@ -139,13 +162,19 @@ function showPhoto(photo, label, emojiSymbol = null, extraElements = []) {
     if (activeTimeout) clearTimeout(activeTimeout);
     document.querySelectorAll(".emoji").forEach(e => e.remove());
 
+    // Hide all photos and labels
     [photoYes, photoNo, photoWhy, photoYayAgain].forEach(p => { p.style.display = "none"; p.style.opacity = 0; });
     [labelYes, labelNo, labelWhy, labelYayAgain].forEach(l => { l.style.display = "none"; l.style.opacity = 0; });
 
-    // hide extra elements first
-    [reallyLabel, secondButtonContainer].forEach(el => { el.style.display = "none"; el.style.opacity = 0; });
+    // Hide second-level elements
+    extraElements.forEach(el => {
+        el.style.display = "none";
+        el.style.opacity = 0;
+    });
+    secondLevelWrapper.style.display = "none";
+    secondLevelWrapper.style.pointerEvents = "none";
 
-    // show new photo and label
+    // Show new photo and label
     photo.style.display = "block";
     label.style.display = "block";
     requestAnimationFrame(() => {
@@ -153,24 +182,31 @@ function showPhoto(photo, label, emojiSymbol = null, extraElements = []) {
         label.style.opacity = 1;
     });
 
-    // show extra elements
-    extraElements.forEach(el => {
-        el.style.display = "block";
-        requestAnimationFrame(() => el.style.opacity = 1);
-    });
+    // Show extra elements
+    if(extraElements.length > 0) {
+        secondLevelWrapper.style.display = "block";
+        secondLevelWrapper.style.pointerEvents = "auto";
+        extraElements.forEach(el => {
+            requestAnimationFrame(() => el.style.opacity = 1);
+        });
+    }
 
     if (emojiSymbol) spawnEmojis(emojiSymbol);
 
-    // hide everything after 5s
+    // Hide everything after 5 seconds
     activeTimeout = setTimeout(() => {
         photo.style.opacity = 0;
         label.style.opacity = 0;
         extraElements.forEach(el => el.style.opacity = 0);
+
         setTimeout(() => {
             photo.style.display = "none";
             label.style.display = "none";
             extraElements.forEach(el => el.style.display = "none");
+            secondLevelWrapper.style.display = "none";
+            secondLevelWrapper.style.pointerEvents = "none";
         }, 200);
+
         activeTimeout = null;
     }, 5000);
 }
